@@ -2,65 +2,62 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function App() {
+
   const [form, setForm] = useState({
-    bedrooms: '',
-    bathrooms: '',
-    sqft_living: '',
-    floors: '',
-    waterfront: '0',
-    view: '0',
-    condition: '3',
-    grade: '',
-    sqft_above: '',
-    sqft_basement: '',
-    yr_built: ''
+    bedrooms: "",
+    bathrooms: "",
+    sqft_living: "",
+    floors: "",
+    waterfront: "",
+    view: "",
+    condition: "",
+    grade: "",
+    sqft_above: "",
+    sqft_basement: "",
+    yr_built: ""
   });
 
   const [price, setPrice] = useState(null);
-  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+  // ✅ 👉 PASTE YOUR FUNCTION HERE
+  const predictPrice = async () => {
+    try {
+      const formattedData = {
+        bedrooms: Number(form.bedrooms),
+        bathrooms: Number(form.bathrooms),
+        sqft_living: Number(form.sqft_living),
+        floors: Number(form.floors),
+        waterfront: Number(form.waterfront),
+        view: Number(form.view),
+        condition: Number(form.condition),
+        grade: Number(form.grade),
+        sqft_above: Number(form.sqft_above),
+        sqft_basement: Number(form.sqft_basement),
+        yr_built: Number(form.yr_built)
+      };
+
+      const response = await axios.post(
+        "https://house-price-prediction-1-gcoz.onrender.com/predict",
+        formattedData
+      );
+
+      setPrice(response.data.price);
+
+    } catch (error) {
+      console.error(error);
+      alert("❌ Error connecting to backend");
+    }
   };
 
-  
-  const predictPrice = async () => {
-  // 🔹 Check empty fields
-  if (Object.values(form).some(v => v === "")) {
-    alert("⚠️ Please fill all fields");
-    return;
-  }
+  return (
+    <div>
+      {/* your inputs */}
+      <button onClick={predictPrice}>Predict Price</button>
 
-  setLoading(true);
-  setPrice(null);
-
-  try {
-    // 🔹 Convert to numbers
-    const formattedData = Object.fromEntries(
-      Object.entries(form).map(([key, value]) => [key, Number(value)])
-    );
-
-    const response = await axios.post(
-      "https://house-price-prediction-1-gcoz.onrender.com/predict",
-      formattedData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    setPrice(response.data.price);
-  } catch (error) {
-    console.error(error);
-    alert("❌ Error connecting to backend");
-  }
-
-  setLoading(false);
-};
+      {price && <h2>₹ {price}</h2>}
+    </div>
+  );
+}
   
   return (
     <div style={styles.container}>
@@ -128,7 +125,7 @@ function App() {
       </div>
     </div>
   );
-}
+
 
 const styles = {
   container: {
