@@ -37,7 +37,7 @@ if (values.some(v => v === "")) {
     setPrice(null);
 
     try {
-      const response = axios.post('https://house-price-prediction-1-gcoz.onrender.com/predict', form)
+      const response = axios.post('https://house-price-prediction-1-gcoz.onrender.com/predict', form);
       setPrice(response.data.price);
     } catch (error) {
       alert("❌ Error connecting to backend");
