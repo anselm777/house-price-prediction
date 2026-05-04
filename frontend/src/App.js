@@ -26,26 +26,42 @@ function App() {
     });
   };
 
+  
   const predictPrice = async () => {
-    const values = Object.values(form);
+  // 🔹 Check empty fields
+  if (Object.values(form).some(v => v === "")) {
+    alert("⚠️ Please fill all fields");
+    return;
+  }
 
-if (values.some(v => v === "")) {
-  alert("⚠️ Please fill all fields");
-  return;
-}
-    setLoading(true);
-    setPrice(null);
+  setLoading(true);
+  setPrice(null);
 
-    try {
-      const response = axios.post('https://house-price-prediction-1-gcoz.onrender.com/predict', form);
-      setPrice(response.data.price);
-    } catch (error) {
-      alert("❌ Error connecting to backend");
-    }
+  try {
+    // 🔹 Convert to numbers
+    const formattedData = Object.fromEntries(
+      Object.entries(form).map(([key, value]) => [key, Number(value)])
+    );
 
-    setLoading(false);
-  };
+    const response = await axios.post(
+      "https://house-price-prediction-1-gcoz.onrender.com/predict",
+      formattedData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
+    setPrice(response.data.price);
+  } catch (error) {
+    console.error(error);
+    alert("❌ Error connecting to backend");
+  }
+
+  setLoading(false);
+};
+  
   return (
     <div style={styles.container}>
       <div style={styles.card}>
